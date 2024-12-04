@@ -1,4 +1,5 @@
 import app from "./app";
+import { deleteRecords, queryDb } from "./query";
 import { ApiError, Provider } from "./utils/ApiError";
 
 (() => {
@@ -10,3 +11,5 @@ import { ApiError, Provider } from "./utils/ApiError";
 		process.exit(1);
 	}
 })();
+
+// deleteRecords()

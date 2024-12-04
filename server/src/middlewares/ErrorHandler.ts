@@ -5,6 +5,7 @@ import chalk from "chalk";
 
 class ErrorHandler {
     static handle(err: Error, req: Request, res: Response, next: NextFunction) {
+        console.log(chalk.redBright("got error"))
         
         const StatusCode = err instanceof ApiError ? err.statusCode : 500;
         const Message = err.message || "Internal server error";
