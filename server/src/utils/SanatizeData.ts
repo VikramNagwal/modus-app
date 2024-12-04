@@ -1,35 +1,41 @@
 import { password } from 'bun';
+
+enum Role {
+    ADMIN = 'admin',
+    USER = 'user'
+}
 class SanatizeData {
+    private name?: string;
+    private password: string;
+    private email: string;
+    private role: Role;
 
-    name?: string;
-    password: string;
-    email: string;
-
-    constructor(password: string, email: string, name?: string) {
+    constructor(password: string, email: string, name?: string, role = 'user') {
         this.name = name;
         this.password = password;
         this.email = email;
+        this.role = role === 'admin' ? Role.ADMIN : Role.USER;
     }
 
-    async hashPassword() {
-        this.password = await password.hash(this.password);
-        return this.password;
+    async hashPassword(): Promise<string> {
+        return await password.hash(this.password);
     }
 
-    async verifyPassword() {
-        return password.verify(this.password, this.password);
+    async verifyPassword(hashedPassword: string): Promise<boolean> {
+        return await password.verify(this.password, hashedPassword);
     }
 
-    lowerCase() {
-        const regex = /(?:')|(?:--)|(?:#)|(?:;)|(?:\b(?:SELECT|INSERT|DELETE|UPDATE|DROP|--|OR|AND|UNION)\b)/;
+    sanitizeEmail(): string {
+        // Basic email validation and sanitization
+        const normalizedEmail = this.email.toLowerCase().trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        return emailRegex.test(normalizedEmail) ? normalizedEmail : '';
+    }
 
-        if(this.name && regex.test(this.name)) {
-            this.name.replaceAll(regex, '-');
-        }
-        return this.name ? this.name.toLowerCase() : '';
+    getEmail(): string {
+        return this.sanitizeEmail();
     }
 }
 
-export {
-    SanatizeData
-}
+export { SanatizeData };
